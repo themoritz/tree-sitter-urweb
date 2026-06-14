@@ -1,4 +1,34 @@
-; Ur/Web Tree-sitter highlight queries for Neovim
+; Ur/Web tree-sitter highlight queries for Neovim
+
+; ========== Declaration name fields (before generic identifier rules) =========
+(vali name: (lident) @function)
+
+(con_decl name: (lident) @type.definition)
+(type_decl name: (lident) @type.definition)
+(sgi_con name: (lident) @type.definition)
+(sgi_type name: (lident) @type.definition)
+(sgi_con_abs name: (lident) @type.definition)
+(sgi_class name: (lident) @type.definition)
+(datatype name: (lident) @type.definition)
+(datatype_imp_decl name: (lident) @type.definition)
+
+(dcon name: (uident) @constructor)
+
+(structure_decl name: (uident) @module)
+(signature_decl name: (uident) @module)
+(functor_decl name: (uident) @module)
+(functor_decl arg: (uident) @module)
+(sgi_structure name: (uident) @module)
+(sgi_functor name: (uident) @module)
+(module_ref (uident) @module)
+
+(table_decl name: (lident) @variable)
+(sequence_decl name: (lident) @variable)
+(view_decl name: (lident) @variable)
+(cookie_decl name: (lident) @variable)
+(style_decl name: (lident) @variable)
+(sgi_view name: (lident) @variable)
+(ffi_decl name: (lident) @function)
 
 ; ========== Keywords ==========
 [
@@ -8,6 +38,7 @@
   "con"
   "constraint"
   "constraints"
+  "cookie"
   "datatype"
   "else"
   "end"
@@ -17,191 +48,95 @@
   "fun"
   "functor"
   "if"
+  "in"
   "include"
+  "let"
+  "map"
   "of"
   "open"
-  "let"
-  "in"
+  "policy"
   "rec"
   "sequence"
-  "ensure_index"
   "sig"
   "signature"
-  "cookie"
-  "style"
-  "task"
-  "policy"
   "struct"
   "structure"
+  "style"
   "table"
-  "view"
+  "task"
   "then"
   "type"
   "val"
+  "view"
   "where"
-  "as"
+  "ensure_index"
 ] @keyword
 
-; ========== SQL Keywords ==========
-(sql_keyword_value) @keyword
-
-; ========== Operators / Symbols ==========
+; ========== SQL keywords ==========
 [
-  "="
-  "=>"
-  "->"
-  "<-"
-  "-->"
-  "::"
-  ":::"
-  "++"
-  "---"
-  "--"
-  "~"
-  "|>"
-  "<|"
-  ">>>"
-  "<<<"
-  "||"
-  "&&"
-  "<>"
-  "<"
-  ">"
-  "<="
-  ">="
-  "^"
-  "+"
-  "-"
-  "*"
-  "/"
-  "%"
-  "|"
-  "@"
-  "@@"
-  "$"
-  ";"
+  "SELECT" "SELECT1" "DISTINCT" "FROM" "AS" "WHERE" "SQL" "GROUP" "ORDER" "BY"
+  "HAVING" "LIMIT" "OFFSET" "ALL" "JOIN" "INNER" "CROSS" "OUTER" "LEFT" "RIGHT"
+  "FULL" "ON" "UNION" "INTERSECT" "EXCEPT" "INSERT" "INTO" "VALUES" "UPDATE"
+  "SET" "DELETE" "IS" "NULL" "LIKE" "COALESCE" "CAST" "NOT" "AND" "OR"
+  "COUNT" "AVG" "SUM" "MIN" "MAX" "STRING_AGG" "RANK" "PARTITION" "OVER"
+  "ASC" "DESC" "RANDOM" "CURRENT_TIMESTAMP"
+  "PRIMARY" "KEY" "FOREIGN" "REFERENCES" "UNIQUE" "CHECK" "CONSTRAINT"
+  "CASCADE" "RESTRICT" "ACTION" "NO" "IF" "THEN" "ELSE"
+] @keyword
+
+[
+  "TRUE"
+  "FALSE"
+] @constant.builtin
+
+; ========== Operators ==========
+[
+  "=" "=>" "->" "<-" "-->" "==>" "::" ":::" "::_" ":::_"
+  "++" "---" "--" "~" "|>" "<|" ">>>" "<<<" "||" "&&"
+  "<>" "<" ">" "<=" ">=" "<->" "^" "+" "-" "*" "/" "%"
+  "|" "@" "$" "#" "!"
 ] @operator
 
-; ========== Punctuation ==========
-[
-  "("
-  ")"
-  "{"
-  "}"
-  "["
-  "]"
-] @punctuation.bracket
+(backtick_path) @operator
 
-[
-  ","
-  "."
-  ":"
-  "..."
-] @punctuation.delimiter
+; ========== Punctuation ==========
+[ "(" ")" "{" "}" "[" "]" ] @punctuation.bracket
+[ "," "." ":" "..." ";" ] @punctuation.delimiter
 
 ; ========== Literals ==========
-(integer_literal) @number
-(float_literal) @number.float
-(string_literal) @string
-(escape_sequence) @string.escape
-(char_literal) @character
-(unit_expression) @constant.builtin
+(int) @number
+(float) @number.float
+(string) @string
+(char) @character
+(unit) @constant.builtin
 
 ; ========== Comments ==========
 (comment) @comment
+(xml_comment) @comment
 
-; ========== Declarations ==========
-(val_binding
-  name: (identifier) @variable)
+; ========== Type-level constructor variables (int, string, ...) ==========
+(variable_con (lident) @type)
 
-(fun_binding
-  name: (identifier) @function)
+; ========== Record / field labels ==========
+(rpath_con) @property
+(record_pat (uident) @property)
+(field_exp (lident) @property)
+(field_exp (uident) @property)
+(field_exp (int) @property)
+(sql_fident) @property
+(sql_select_item (sql_tident) @variable)
+(sql_group_item (sql_tident) @variable)
 
-(type_declaration
-  name: (identifier) @type.definition)
-
-(datatype_declaration
-  name: (identifier) @type.definition)
-
-(con_declaration
-  name: (identifier) @type.definition)
-
-(class_declaration
-  name: (identifier) @type.definition)
-
-(structure_declaration
-  name: (constructor_name) @module)
-
-(signature_declaration
-  name: (constructor_name) @module)
-
-(functor_declaration
-  name: (constructor_name) @module)
-(functor_declaration
-  param_name: (constructor_name) @module)
-
-(table_declaration
-  name: (identifier) @variable)
-
-(view_declaration
-  name: (identifier) @variable)
-
-(sequence_declaration
-  name: (identifier) @variable)
-
-(cookie_declaration
-  name: (identifier) @variable)
-
-(style_declaration
-  name: (identifier) @variable)
-
-; ========== Type parameters ==========
-(type_param
-  name: (identifier) @type)
-(type_param
-  name: (constructor_name) @type)
-
-; ========== Constructors / Modules ==========
-(constructor_def
-  constructor: (constructor_name) @constructor)
-
-(constructor_pattern
-  (constructor_name) @constructor)
-(constructor_expression
-  (constructor_name) @constructor)
-
-(module_path
-  (constructor_name) @module)
-(module_qualified
-  (constructor_name) @module)
-
-; ========== Field names ==========
-(field_name) @property
-
-; ========== Record fields ==========
-(record_field
-  name: (identifier) @property)
-(record_field
-  name: (constructor_name) @property)
-(record_type_field
-  name: (identifier) @property)
-(record_type_field
-  name: (constructor_name) @property)
-(record_pattern_field
-  name: (identifier) @property)
-(record_pattern_field
-  name: (constructor_name) @property)
-
-; ========== Patterns ==========
-(wildcard_pattern) @variable.builtin
-(wildcard_expression) @variable.builtin
+; ========== SQL table names ==========
+(sql_table (lident) @variable)
 
 ; ========== XML ==========
-(xml_tag_name) @tag
-(xml_attribute_name) @tag.attribute
+(tag_name) @tag
+(attr_name) @tag.attribute
+(xml_close_tag) @tag
 (xml_text) @none
 
-; ========== Identifiers ==========
-; Must be last so more specific matches above take precedence
-(constructor_name) @type
-(identifier) @variable
+; ========== Constructors / modules / variables (generic; keep last) ==========
+(module_path) @module
+(constructor) @constructor
+(variable) @variable

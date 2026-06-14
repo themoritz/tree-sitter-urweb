@@ -1,16 +1,16 @@
 ; Ur/Web indent queries for Neovim
 
 [
-  (let_expression)
-  (struct_expression)
-  (sig_expression)
-  (case_expression)
-  (if_expression)
-  (fn_expression)
-  (fun_declaration)
-  (record_expression)
+  (let_exp)
+  (str)
+  (sgn_term)
+  (case_exp)
+  (if_exp)
+  (record_con_exp)
   (record_type)
-  (xml_expression)
+  (record_con)
+  (xml)
+  (sql_query)
 ] @indent.begin
 
 [

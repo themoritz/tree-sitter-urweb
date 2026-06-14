@@ -11,11 +11,11 @@ Tree-sitter grammars for Ur/Web source files (`.ur`, `.urs`) and project files (
 ## Build the parsers
 
 ```bash
-# Ur/Web source grammar
+# Ur/Web source grammar (has an external scanner: src/scanner.c)
 cd tree-sitter-urweb
 npm install
 npx tree-sitter generate
-cc -o parser.so -shared -fPIC -I src src/parser.c
+cc -o parser.so -shared -fPIC -I src src/parser.c src/scanner.c
 
 # Ur/Web project file grammar
 cd ../tree-sitter-urweb-project

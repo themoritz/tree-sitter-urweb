@@ -30,6 +30,9 @@ const DIRECTIVE_NAMES = [
   "minHeap",
   "memoInline",
   "neverInline",
+  "neverEarlyInline",
+  "coreInline",
+  "monoInline",
   "noMangleSql",
   "noXsrfProtection",
   "onError",
@@ -57,7 +60,16 @@ module.exports = grammar({
   word: ($) => $._word,
 
   rules: {
-    source_file: ($) => repeat(choice($._line, /\n/)),
+    // Lines are newline-terminated, except the final line may omit its
+    // trailing newline at end of file.
+    source_file: ($) =>
+      seq(
+        repeat(choice($._line, /\n/)),
+        optional(choice(
+          alias($._directive_core, $.directive),
+          alias($._word, $.module_reference),
+        )),
+      ),
 
     _line: ($) =>
       choice(
@@ -68,11 +80,13 @@ module.exports = grammar({
 
     comment: ($) => token(seq("#", /[^\n]*/)),
 
-    directive: ($) =>
+    directive: ($) => seq($._directive_core, /\n/),
+
+    _directive_core: ($) =>
       seq(
         field("name", $.directive_name),
         optional(field("arguments", $.arguments)),
-        /\n/,
+        optional($.comment),
       ),
 
     directive_name: ($) =>
@@ -81,7 +95,7 @@ module.exports = grammar({
     arguments: ($) => repeat1($._word),
 
     // Module references (bare names after the directives section)
-    module_reference: ($) => seq($._word, /\n/),
+    module_reference: ($) => seq($._word, optional($.comment), /\n/),
 
     // Single token for any non-whitespace word on a line.
     // Directive names are extracted as keywords from this pattern.
