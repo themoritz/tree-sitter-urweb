@@ -3,6 +3,21 @@
 ; ========== Declaration name fields (before generic identifier rules) =========
 (vali name: (lident) @function)
 
+; val binding name (val empty = ... / val f x = ...) — highlight like fun
+(val_decl
+  (pat
+    (pat_s
+      (pat_term
+        (variable (lident) @function)))))
+
+; val binding name with a type annotation (val empty : t = ...)
+(val_decl
+  (pat
+    (pat_s
+      (pat_s
+        (pat_term
+          (variable (lident) @function))))))
+
 (con_decl name: (lident) @type.definition)
 (type_decl name: (lident) @type.definition)
 (sgi_con name: (lident) @type.definition)
