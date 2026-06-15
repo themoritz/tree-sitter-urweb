@@ -55,7 +55,6 @@ module.exports = grammar({
   word: ($) => $.lident,
 
   conflicts: ($) => [
-    [$.kind, $.cexp],
     [$.sql_select_item, $.sqlexp],
     [$._con, $.rpath_con],
     [$.variable, $.rpath_con],
@@ -274,7 +273,16 @@ module.exports = grammar({
     kind: ($) =>
       choice(
         seq("{", $.kind, "}"),
-        prec.right(seq($.kind, "->", $.kind)),
+        // kind ARROW kind reuses the ARROW token at the ARROW precedence level,
+        // matching urweb.grm (`kind : kind ARROW kind`, `%right ARROW`). We use
+        // prec.LEFT rather than prec.right even though urweb.grm is %right: the
+        // kind must reduce eagerly so the `SYMBOL kcolon kind ARROW cexp`
+        // named-implicit-argument boundary (e.g. `m ::: Type -> Type -> ...`)
+        // can be disambiguated -- a deferred (right-assoc) reduction lets the
+        // kind swallow the separator ARROW and truncates parsing. The only
+        // effect is the internal nesting direction of multi-arrow kinds, which
+        // no query (highlights/folds/indents/locals) observes.
+        prec.left(P.arrow, seq($.kind, "->", $.kind)),
         seq("(", $.kind, ")"),
         "__",
         seq("(", $.kind_tuple, ")"),
