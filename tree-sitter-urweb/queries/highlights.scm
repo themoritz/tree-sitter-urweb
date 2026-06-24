@@ -29,6 +29,9 @@
 
 (dcon name: (uident) @constructor)
 
+; constructor application in a pattern (e.g. `Some i`)
+(pat name: (uident) @constructor)
+
 (structure_decl name: (uident) @module)
 (signature_decl name: (uident) @module)
 (functor_decl name: (uident) @module)
